@@ -35,16 +35,6 @@
 			path = "Timeleap Setup";
 			sourceTree = "<group>";
 		};
-		2EFCCFEC2D6ABA0100A5D164 /* Timeleap SetupTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Timeleap SetupTests";
-			sourceTree = "<group>";
-		};
-		2EFCCFF62D6ABA0100A5D164 /* Timeleap SetupUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Timeleap SetupUITests";
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +66,6 @@
 			isa = PBXGroup;
 			children = (
 				2EFCCFD82D6AB9FF00A5D164 /* Timeleap Setup */,
-				2EFCCFEC2D6ABA0100A5D164 /* Timeleap SetupTests */,
-				2EFCCFF62D6ABA0100A5D164 /* Timeleap SetupUITests */,
 				2EFCCFD72D6AB9FF00A5D164 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -130,9 +118,6 @@
 			dependencies = (
 				2EFCCFEB2D6ABA0100A5D164 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				2EFCCFEC2D6ABA0100A5D164 /* Timeleap SetupTests */,
-			);
 			name = "Timeleap SetupTests";
 			packageProductDependencies = (
 			);
@@ -152,9 +137,6 @@
 			);
 			dependencies = (
 				2EFCCFF52D6ABA0100A5D164 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				2EFCCFF62D6ABA0100A5D164 /* Timeleap SetupUITests */,
 			);
 			name = "Timeleap SetupUITests";
 			packageProductDependencies = (
