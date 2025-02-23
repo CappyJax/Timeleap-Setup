@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var gpus: String = "0"
     @State private var ram: String = "1024"
     @State private var rpc: String = "https://arbitrum.llamarpc.com"
+    @State private var isCLIDownloading: Bool = false
     
     @State private var showConfiguration: Bool = false
     
@@ -31,29 +32,42 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Timeleap Setup").font(.title).padding(.top, 20)
             
-            // Add a TextField for the release version
-            HStack {
-                Text("Release Version:")
-                TextField("Enter release version", text: $releaseVersion)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .frame(width: 200)
-                    .onChange(of: releaseVersion) {
-                        checkTimeleapInstallation()
-                    }
-            }
+          
+                HStack {
+                    Text("Release Version:")
+                    TextField("Enter release version", text: $releaseVersion)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(width: 200)
+                        .onChange(of: releaseVersion) { newValue, _ in
+                            checkTimeleapInstallation()
+                        }
+                    Link("Find latest release here.", destination: URL(string: "https://github.com/TimeleapLabs/timeleap/releases")!)
+                }
             
-       
-            
-            HStack(spacing: 30) {
+            HStack(spacing: 20) {
                 Button(action: { downloadTimeleapCLI() }) {
-                    Text("Download Timeleap CLI")
-                        .font(.headline)
-                        .padding()
-                        .background(isTimeleapInstalled && isMatchingVersion() ? Color.gray : Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                    Group {
+                        if isCLIDownloading {
+                            HStack(spacing: 8) {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .scaleEffect(0.8) // Reduces the spinner's size
+                                Text("Downloading")
+                            }
+                        } else {
+                            Text("Download Timeleap CLI")
+                        }
+                    }
+                    .font(.headline)
+                    .padding()
+                    .frame(height: 44)
+                    .frame(width: 195)
+                    .background(isTimeleapInstalled && isMatchingVersion() ? Color.gray : Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
                 .disabled(isTimeleapInstalled && isMatchingVersion())
+
                 
                 // Setup Timeleap Button
                 if !isSetupComplete {
@@ -64,6 +78,9 @@ struct ContentView: View {
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(10)
+                            .frame(height: 44)
+                            .frame(width: 150)
+                            
                     }
                 }
                 
@@ -74,6 +91,8 @@ struct ContentView: View {
                         .background(isBrokerRunning ? Color.green : Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(10)
+                        .frame(height: 44)
+                        .frame(width: 180)
                 }
                 
                 Button(action: { toggleWorkerNode() }) {
@@ -83,6 +102,8 @@ struct ContentView: View {
                         .background(isWorkerRunning ? Color.green : Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(10)
+                        .frame(height: 44)
+                        .frame(width: 180)
                 }
                 
                 // Configuration Button
@@ -93,6 +114,8 @@ struct ContentView: View {
                         .background(Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(10)
+                        .frame(height: 44)
+                        .frame(width: 170)
                 }
                 .sheet(isPresented: $showConfiguration) {
                     ConfigurationView(
@@ -112,28 +135,19 @@ struct ContentView: View {
             }
             .buttonStyle(PlainButtonStyle())
             
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Logs").font(.headline)
-                TextEditor(text: $logText)
-                    .frame(height: 150)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-            }
-            
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Monitoring").font(.headline)
-                TextEditor(text: $monitoringText)
-                    .frame(height: 240)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-            }
+            LogsView(logText: $logText)
+
+            MonitoringView(monitoringText: $monitoringText)
+
             Button(action: { clearLogs() }) {
                 Text("Clear Logs")
                     .font(.headline)
-                    .padding()
+                    .padding(8)
                     .background(Color.red)
                     .foregroundColor(.white)
                     .cornerRadius(10)
+                    .frame(height:60)
+                    
             }
             .buttonStyle(PlainButtonStyle())
         }
@@ -151,6 +165,7 @@ struct ContentView: View {
             stopNodeStatusTimer()
         }
     }
+    
     
     // MARK: - Functions
     
@@ -224,6 +239,7 @@ struct ContentView: View {
             let curlCommand = "curl -L -o \(timeleapPath) \(timeleapURL)"
             DispatchQueue.main.async {
                 self.logText += "Running command: \(curlCommand)\n"
+                isCLIDownloading = true
             }
             let curlOutput = self.runShellCommandAndReturnOutput(curlCommand)
             DispatchQueue.main.async {
@@ -235,6 +251,8 @@ struct ContentView: View {
                 self.runShellCommand("chmod +x \(timeleapPath)")
                 DispatchQueue.main.async {
                     self.logText += "✅ Timeleap CLI downloaded and made executable!\n"
+                    isTimeleapInstalled = true
+                    isCLIDownloading = false
                 }
             } else {
                 DispatchQueue.main.async {
@@ -1065,12 +1083,74 @@ struct ConfigurationView: View {
     }
 }
 
-// Preview provider struct
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+struct LogsView: View {
+    @Binding var logText: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            // Change header text color and font if desired
+            Text("Logs")
+                .font(.headline)
+                .foregroundColor(.white) // Header text color
+            
+            ScrollViewReader { proxy in
+                ScrollView {
+                    // Change log text appearance here
+                    Text(logText)
+                        .id("logBottom")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .foregroundColor(.green) // Log text color
+                }
+                .frame(height: 150)
+                .background(Color.black) // Logs window background color
+                .cornerRadius(10)
+                .onChange(of: logText) { newValue, _ in
+                    withAnimation {
+                        proxy.scrollTo("logBottom", anchor: .bottom)
+                    }
+                }
+            }
+        }
+       
     }
 }
+
+struct MonitoringView: View {
+    @Binding var monitoringText: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Monitoring")
+                .font(.headline)
+                .foregroundColor(.white) // Header text color
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Text(monitoringText)
+                        .id("logBottom")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .foregroundColor(.green) // Monitoring text color
+                }
+                .frame(height: 240)
+                .background(Color.black) // Monitoring window background color
+                .cornerRadius(10)
+                .onChange(of: monitoringText)  { newValue, _ in
+                    withAnimation {
+                        proxy.scrollTo("logBottom", anchor: .bottom)
+                    }
+                }
+            }
+        }
+      
+    }
+}
+
+
+
+
+
+
 
 extension ProcessInfo {
     var machineHardwareName: String {
