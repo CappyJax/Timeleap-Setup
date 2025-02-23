@@ -1,9 +1,4 @@
-//
-//  TimeleapDevnetSetupUITestsLaunchTests.swift
-//  TimeleapDevnetSetupUITests
-//
-//  Created by Jack Odinsen on 2/6/25.
-//
+
 
 import XCTest
 
