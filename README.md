@@ -1,4 +1,4 @@
-This is a Timeleap setup app I developed more as a learning experience in AI and coding.  I am not a developer, so use at your own risk.  The app should work on ARM and AMD macs.  It may work on linux or windows, but not really sure.  
+This is a Timeleap setup app I developed more as a learning experience in AI and coding.  I am not a developer, I a not affiliated with Timeleap in anyway, so use at your own risk.  The app should work on ARM and AMD macs.  It may work on linux or windows, but not really sure.  
 
 The app will do the following. 
 1. Install dependencies required for the Timeleap CLI.
