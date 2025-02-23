@@ -1,10 +1,3 @@
-//
-//  TimeleapDevnetSetupApp.swift
-//  TimeleapDevnetSetup
-//
-//  Created by Jack Odinsen on 2/6/25.
-//
-
 import SwiftUI
 import SwiftData
 
